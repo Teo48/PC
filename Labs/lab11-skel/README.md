@@ -1,0 +1,1 @@
+Totul este functional. Am si screenshot cu data/ora si terminalul pentru bonus daca va fi nevoie desi cred ca totul s-a trimis ok(sa nu fi avut eu un o greseala de scriere cand ti-am pus adresa).

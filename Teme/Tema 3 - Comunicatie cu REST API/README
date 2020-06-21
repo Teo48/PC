@@ -1,0 +1,95 @@
+
+Copyright Teodor Matei 2020 - 323 CA
+ _____ _ _            _     _    _ ___________ 
+/  __ \ (_)          | |   | |  | |  ___| ___ \
+| /  \/ |_  ___ _ __ | |_  | |  | | |__ | |_/ /
+| |   | | |/ _ \ '_ \| __| | |/\| |  __|| ___ \
+| \__/\ | |  __/ | | | |_  \  /\  / |___| |_/ /
+ \____/_|_|\___|_| |_|\__|  \/  \/\____/\____/ 
+                                               
+
+In implementarea temei am folosit scheletul oferit in laboratorul 10
+(cu adaugarea unei cereri de tip DELETE).
+
+*Structura*
+-----------
+- client_utils.h -> Definitii pentru helpere.
+- client_utils.c -> Implementarea helperelor.
+- client.c -> Logica programului.
+
+*Implementare*
+--------------
+
+- register: Citesc de la tastatura username-ul si parola dorita, creez
+obiectul json cu aceste date si construiesc cererea de tip POST ce urmeaza
+a fi trimisa serverului. In cazul in care exista deja un utilizator cu acelasi
+username va fi afisat mesajul "Utilizatorul X exista deja!". In cazul in care
+un utilzator incearca sa inregistreze un alt cont in timp ce e legat, 
+va fi primi un mesaj de eroare.
+
+- login: Citesc de la tastatura username-ul si parola, creeze obiectul json
+si construiesc cererea de tip POST. Din raspunsul primit de la server extrag
+obiectul json si verific daca primesc cookie. In caz afirmativ, salvez cookie-ul
+si afisez mesajul "Utilizatorul X  s-a logat cu succes!". Daca utilizatorul
+a introdus gresit datele se afiseaza mesajul "Credentiale gresite!".
+De asemenea, daca cineva incearca sa dea login peste un alt utilizator logat
+va primi un mesaj de eroare. 
+!!! De precizat ca am respectat ce s-a zis pe forum si anume ca username-ul
+si parola nu vor contine spatii.
+
+- enter_library: Verific daca utilizatorul este logat, in caz ca nu se afiseaza
+un mesaj de eroare. Daca este logat se face o cerere GET la server cu cookie-ul
+obtinut in urma login-ului si se extrage token-ul primit de la server.
+
+- get_books: Verific daca utilizatorul este logat si are acces la
+biblioteca(a primit token-ul JWT). Daca are acces, fac o cerere
+GET la server si extrag din raspuns date despre cartile din biblioteca.
+Daca biblioteca este goala se afiseaza "Biblioteca este goala", altfel se afiseaza
+lista de carti sub forma de obiecte JSON in format pretty(thanks parson).
+
+- get_book: Similar get_books, doar ca se cere introducerea unui id pentru
+a obtine mai multe informatii despre cartea dorita. Se verifica daca id-ul
+introdus este un integer sau nu. In cazul in care nu este primit un integer
+se va afisa un mesaj de eroare, altfel se face o cerere GET la server si
+se extrage din raspuns obiectul JSON ce contine date despre cartea cu acel id.
+
+- add_book: Se citesc datele cerute in enunt si se verifica daca numarul de
+pagini este un integer sau nu. Daca utilizatorul incearca sa introduca un 
+mesaj gol in cadrul unui camp, acesta nu va putea completa campul urmator 
+pana cand nu l-a completat pe cel anterior. Se creeaza un obiect json cu 
+datele primite de la tastatura si se face o cerere de tip POST. Se verifica
+raspunsul de la server, daca totul s-a petrecut in regula se afiseaza mesajul
+"Cartea a fost adaugata", iar daca utilizatorul incearca sa faca spam ii va fi
+afisat mesajul "Nu poti adauga mai mult de 3 carti intr-un interval de 15 minute."
+
+- delete_book: Similar get_book, se cere introducerea id-ului cartii ce se
+doreste a fi stearsa. Se verifica daca id-ul introdus este un integer sau
+nu si se realizeaza o cerere DELETE la server. Daca nu s-a putut sterge cartea
+sau id-ul cartii nu exista in baza de date se afiseaza mesajul "Eroare!
+Cartea cu id-ul X nu exista!", altfel se afiseaza un mesaj de succes.
+
+- logout: Se sterg cookie-ul si token-ul JWT si se face o cerere GET la server.
+De asemenea, un utilizator nu poate da logout daca nu s-a logat in prealabil.
+
+- exit: Se inchide conexiunea cu serverul si se elibereaza resursele alocate.
+(Si nu, nu am memory leaks :D)
+
+Am folosit biblioteca parson pentru a crea obiectele JSON ce sunt trimise
+serverului. Pentru extragerea informatiei din mesaje
+(cookie, respectiv token JWT) am folosit functii standard in C (strstr / strchr).
+
+- client.c: Se citesc comenzi de la tastatura pana la introducerea lui exit. Daca
+comenzile introduse sunt invalide se va afisa un mesaj de eroare, altfel se apeleaza
+functiile corespunzatoare fiecari comenzi.
+
+*Feedback*
+----------
+O tema foarte interesanta! Kudos guys!
+
+*Referinte*
+-----------
+https://github.com/kgabis/parson
+https://ocw.cs.pub.ro/courses/pc/laboratoare/10
+
+
+
